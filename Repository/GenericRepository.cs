@@ -15,7 +15,6 @@ namespace E_CommerceAPI.Repository
             _context = context;
             _set = _context.Set<T>();
             _logger = logger;
-
         }
 
         public async Task CreateAsync(T entity)
@@ -32,34 +31,60 @@ namespace E_CommerceAPI.Repository
             }
         }
 
-        public async Task DeleteAsync(Guid Id)
+        public async Task DeleteAsync(T entity)
         {
             try
             {
-                _logger.LogInformation("Deleted a {entity} with id {entityId}", )
+                _logger.LogInformation("Deleted a {entity}", entity.GetType().Name);
+                _set.Remove(entity);
+                await _context.SaveChangesAsync();
             }
             catch (Exception e)
             {
-
+                _logger.LogError(e, "Failed to delete {entity}", entity.GetType().Name);
             }
         }
 
-        public async Task<List<T>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<T> GetAsync(Guid Id)
+        public async Task<List<T>?> GetAllAsync()
         {
             try
             {
-                _logger.LogInformation($"Retrieved an {nameof} with id: {Id}")
+                _logger.LogInformation("Retrieved all {set}", _set.GetType().Name);
+                return await _set.ToListAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to retrieve all {set}", _set.GetType().Name);
+                return null;
             }
         }
 
-        public async Task UpdateAsync(Guid Id)
+        public async Task<T?> GetAsync(Guid Id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogInformation("Retrieved an {Id} with id: {Id}", Id, Id.GetType().Name);
+                return await _set.FindAsync(Id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to retrieve an {Id} with {Id}", Id.GetType().Name, Id);
+                return null;
+            }
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            try
+            {
+                _logger.LogInformation("Updated an {entity} with {id}", entity.GetType().Name, entity.Id);
+                _set.Update(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to update an {entity} with {id}", entity.GetType().Name, entity.Id);
+            }
         }
     }
 }

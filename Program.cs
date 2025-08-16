@@ -22,6 +22,8 @@ namespace E_CommerceAPI
 
             var app = builder.Build();
 
+            app.UseStaticFiles();
+
 
             app.Run();
         }

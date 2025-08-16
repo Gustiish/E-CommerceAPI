@@ -4,13 +4,13 @@ namespace E_CommerceAPI.Repository
 {
     public interface IGenericRepository<T> where T : class, IEntity
     {
-        Task<T> GetAsync(Guid Id);
+        Task<T?> GetAsync(Guid Id);
         Task CreateAsync(T entity);
-        Task<List<T>> GetAllAsync();
+        Task<List<T>?> GetAllAsync();
 
-        Task UpdateAsync(Guid Id);
+        Task UpdateAsync(T entity);
 
-        Task DeleteAsync(Guid Id);
+        Task DeleteAsync(T entity);
 
 
 
