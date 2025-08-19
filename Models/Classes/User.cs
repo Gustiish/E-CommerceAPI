@@ -5,6 +5,6 @@ namespace E_CommerceAPI.Models.Classes
 {
     public class User : IdentityUser<Guid>, IEntity
     {
-
+        public Order? Order { get; set; }
     }
 }
