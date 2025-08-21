@@ -5,7 +5,7 @@ namespace E_CommerceAPI.Models.Classes
     public class Order
     {
         public Guid Id { get; set; }
-        public required User Customer { get; set; }
+        public Guid UserId { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
