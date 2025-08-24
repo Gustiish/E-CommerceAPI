@@ -7,24 +7,29 @@ namespace E_CommerceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegisterController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-        public RegisterController(UserManager<User> user, RoleManager<IdentityRole<Guid>> role)
+        public UserController(UserManager<User> user, RoleManager<IdentityRole<Guid>> role)
         {
             _userManager = user;
             _roleManager = role;
         }
 
         [HttpPost]
+        [Route("register")]
         public async Task<ActionResult> RegisterUser([FromBody] RegisterUserDTO userDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(userDTO);
             }
+
+            var userExists = await _userManager.FindByEmailAsync(userDTO.Email);
+            if (userExists != null)
+                return Conflict("User with this email already exists.");
 
             User user = new User()
             {
@@ -45,12 +50,19 @@ namespace E_CommerceAPI.Controllers
         }
 
         [HttpPost]
+        [Route("login")]
         public async Task<ActionResult> LoginUser([FromBody] RegisterUserDTO userDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(userDTO);
             }
+
+            if ()
+
+
+
+
 
 
         }
