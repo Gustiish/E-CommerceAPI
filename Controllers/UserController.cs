@@ -1,5 +1,7 @@
 ﻿using E_CommerceAPI.Models.Classes;
 using E_CommerceAPI.Models.DTOs;
+using E_CommerceAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +13,15 @@ namespace E_CommerceAPI.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly TokenGenerator _tokenGenerator;
 
-        public UserController(UserManager<User> user, RoleManager<IdentityRole<Guid>> role)
+        public UserController(UserManager<User> user, RoleManager<IdentityRole<Guid>> role, TokenGenerator generator)
         {
             _userManager = user;
             _roleManager = role;
+            _tokenGenerator = generator;
         }
+
 
         [HttpPost]
         [Route("register")]
@@ -58,14 +63,34 @@ namespace E_CommerceAPI.Controllers
                 return BadRequest(userDTO);
             }
 
-            if ()
+            User? user = await _userManager.FindByEmailAsync(userDTO.Email) ?? null;
+            if (user == null)
+                return NotFound();
+
+            if (!await _userManager.CheckPasswordAsync(user, userDTO.Password))
+                return Unauthorized("Wrong password");
+
+            var roles = await _userManager.GetRolesAsync(user);
 
 
-
-
-
+            var access_token = _tokenGenerator.GenerateToken(user.Id, user.Email, roles);
+            return Ok(access_token);
 
         }
+
+        [HttpGet]
+        [Route("customers")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetCustomers()
+        {
+            var customerList = await _userManager.GetUsersInRoleAsync("Customer");
+            if (customerList == null)
+                return NotFound("Customers not found");
+
+            return Ok(customerList);
+        }
+
+
 
 
     }

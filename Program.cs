@@ -1,6 +1,7 @@
 using E_CommerceAPI.Database;
 using E_CommerceAPI.Models.Classes;
 using E_CommerceAPI.Repository;
+using E_CommerceAPI.Services;
 using E_CommerceAPI.Services.MappingProfile;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +22,7 @@ namespace E_CommerceAPI
 
             builder.Services.AddLogging();
             builder.Services.AddControllers();
+            builder.Services.AddAuthorization();
             builder.Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,29 +42,31 @@ namespace E_CommerceAPI
 
                 };
             });
-            builder.Services.AddAuthorization();
+
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddIdentity<User, IdentityRole<Guid>>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             builder.Services.AddRouting();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+            builder.Services.AddSingleton<TokenGenerator>();
 
             var app = builder.Build();
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapControllers();
             app.UseStaticFiles();
+            app.MapControllers();
+
 
             using (IServiceScope scope = app.Services.CreateScope())
             {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
-             
+
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                
+
 
                 string adminEmail = configuration["AdminUser:Email"];
                 string adminPassword = configuration["AdminUser:Password"];
