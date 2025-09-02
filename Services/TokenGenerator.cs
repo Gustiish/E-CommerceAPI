@@ -22,7 +22,7 @@ namespace E_CommerceAPI.Services
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Sub, id.ToString(), email),
+                new(JwtRegisteredClaimNames.Sub, id.ToString()),
                 new(JwtRegisteredClaimNames.Email, email)
             };
 
@@ -35,6 +35,7 @@ namespace E_CommerceAPI.Services
                 Issuer = _configuration["JwtSettings:Issuer"],
                 Audience = _configuration["JwtSettings:Audience"],
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
