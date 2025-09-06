@@ -1,7 +1,6 @@
 ﻿using E_CommerceAPI.Models.Classes;
 using E_CommerceAPI.Models.DTOs;
 using E_CommerceAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +24,7 @@ namespace E_CommerceAPI.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult> RegisterUser([FromBody] RegisterUserDTO userDTO)
+        public async Task<ActionResult> RegisterUser([FromBody] UserDTO userDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -56,7 +55,7 @@ namespace E_CommerceAPI.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult> LoginUser([FromBody] RegisterUserDTO userDTO)
+        public async Task<ActionResult> LoginUser([FromBody] UserDTO userDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -78,17 +77,7 @@ namespace E_CommerceAPI.Controllers
 
         }
 
-        [HttpGet]
-        [Route("customers")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> GetCustomers()
-        {
-            var customerList = await _userManager.GetUsersInRoleAsync("Customer");
-            if (customerList == null)
-                return NotFound("Customers not found");
 
-            return Ok(customerList);
-        }
 
 
 

@@ -2,7 +2,7 @@
 
 namespace E_CommerceAPI.Models.DTOs
 {
-    public class RegisterUserDTO
+    public class UserDTO
     {
         [Required]
         [EmailAddress]
